@@ -1,0 +1,42 @@
+[
+  {
+    "courseCode": "comps351f",
+    "weekday": "Monday",
+    "time": "02:00 PM"
+  },
+  {
+    "courseCode": "comps321f",
+    "weekday": "Tuesday",
+    "time": "11:00 AM"
+  },
+  {
+    "courseCode": "comps313f",
+    "weekday": "Tuesday",
+    "time": "02:00 PM"
+  },
+  {
+    "courseCode": "comps267f",
+    "weekday": "Wednesday",
+    "time": "11:00 AM"
+  },
+  {
+    "courseCode": "comps313f",
+    "weekday": "Wednesday",
+    "time": "02:00 PM"
+  },
+  {
+    "courseCode": "comps321f",
+    "weekday": "Wednesday",
+    "time": "04:00 PM"
+  },
+  {
+    "courseCode": "comps351f",
+    "weekday": "Thursday",
+    "time": "11:00 PM"
+  },
+  {
+    "courseCode": "comps267f",
+    "weekday": "Wednesday",
+    "time": "02:00 PM"
+  }
+]
