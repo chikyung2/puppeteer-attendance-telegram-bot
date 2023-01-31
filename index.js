@@ -6,6 +6,7 @@ import fs from 'fs'
 import pptr from 'puppeteer'
 import pptrCore from 'puppeteer-core'
 import chromium from 'chrome-aws-lambda'
+import cron from 'node-cron'
 
 let chrome = {}
 let puppeteer
@@ -22,7 +23,7 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
 const takeAttendance = async (classInfo) => {
   // Launch puppeteer
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     defaultViewport: false,
     // Sometimes not work, then set a slowMo
     // slowMo: 100,
@@ -78,9 +79,9 @@ const takeAttendance = async (classInfo) => {
 
   // Check if attendance success
   const isSubmitted = await page.$('#submitted_msg')
-
   await reportAttendance(isSubmitted, filename, date, classInfo)
-  // await browser.close()
+  
+  await browser.close()
 }
 
 const reportAttendance = async (isSubmitted, filename, date, classInfo) => {
@@ -115,4 +116,6 @@ const checkAttendance = () => {
   }
 }
 
-checkAttendance()
+cron.schedule('0 * * * *', () => {
+  checkAttendance()
+})
