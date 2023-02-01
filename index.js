@@ -3,21 +3,22 @@ dotenv.config()
 import moment from 'moment'
 import TelegramBot from 'node-telegram-bot-api'
 import fs from 'fs'
-import pptr from 'puppeteer'
-import pptrCore from 'puppeteer-core'
-import chromium from 'chrome-aws-lambda'
+import puppeteer from 'puppeteer'
+// import pptr from 'puppeteer'
+// import pptrCore from 'puppeteer-core'
+// import chromium from 'chrome-aws-lambda'
 
-let chrome = {}
-let puppeteer
+// let chrome = {}
+// let puppeteer
 
-if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-  // running on the Vercel platform.
-  chrome = chromium
-  puppeteer = pptrCore
-} else {
-  // running locally.
-  puppeteer = pptr
-}
+// if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+//   // running on the Vercel platform.
+//   chrome = chromium
+//   puppeteer = pptrCore
+// } else {
+//   // running locally.
+//   puppeteer = pptr
+// }
 
 const takeAttendance = async (classInfo) => {
   // Launch puppeteer
