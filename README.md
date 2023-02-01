@@ -6,3 +6,4 @@
 - Go to Attendance page
 - Take screenshot
 - Send message with telegram bot
+- Setup Github Actions
