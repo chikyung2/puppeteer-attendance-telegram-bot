@@ -143,6 +143,8 @@ const checkAttendance = () => {
       }
     }
   }
+
+  console.log('Attendance check completed !!!');
 }
 
 checkAttendance()
