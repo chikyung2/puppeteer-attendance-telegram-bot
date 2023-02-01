@@ -6,7 +6,6 @@ import fs from 'fs'
 import pptr from 'puppeteer'
 import pptrCore from 'puppeteer-core'
 import chromium from 'chrome-aws-lambda'
-import cron from 'node-cron'
 
 let chrome = {}
 let puppeteer
@@ -71,16 +70,18 @@ const takeAttendance = async (classInfo) => {
   const date = moment()
   const formattedDate = date.format('YYYY-MM-DD-HH-mm-ss')
 
+  // Check if attendance success
+  await page.waitForSelector('#submitted_msg', { timeout: 3000 })
+  const isSubmitted = await page.$('#submitted_msg')
+
   // Take screenshot
   const filename = `${classInfo.courseCode}-${formattedDate}.png`
   await page.screenshot({
     path: `./screenshots/${filename}`,
   })
 
-  // Check if attendance success
-  const isSubmitted = await page.$('#submitted_msg')
   await reportAttendance(isSubmitted, filename, date, classInfo)
-  
+
   await browser.close()
 }
 
@@ -90,32 +91,57 @@ const reportAttendance = async (isSubmitted, filename, date, classInfo) => {
 
   if (isSubmitted) {
     bot.sendPhoto(process.env.TELEGRAM_CHAT_ID, `./screenshots/${filename}`, {
-      caption: `Take Attendance Successfully !!!\nCourse Code: ${classInfo.courseCode}\nDate of Class: ${dateOfClass} 14:00\nSubmission Time: ${date}`,
+      caption: `Take Attendance Successfully !!!\nCourse Code: ${classInfo.courseCode.toUpperCase()}\nDate of Class: ${dateOfClass} 14:00\nSubmission Time: ${date}`,
     })
   } else {
     bot.sendMessage(
       process.env.TELEGRAM_CHAT_ID,
-      `Fail to Take Attendance !!!\nCourse Code: ${classInfo.courseCode}\nDate of Class: ${dateOfClass}\nSubmission Time: ${date}`
+      `Fail to Take Attendance !!!\nCourse Code: ${classInfo.courseCode.toUpperCase()}\nDate of Class: ${dateOfClass}\nSubmission Time: ${date}`
     )
   }
 }
 
 const checkAttendance = () => {
+  let attendedClasses = []
+  attendedClasses = JSON.parse(fs.readFileSync('./attended.json', 'utf-8'))
   const classes = JSON.parse(fs.readFileSync('./schedule.json', 'utf-8'))
   const currentTime = moment()
 
   for (const classInfo of classes) {
+    // Read time from class info
     const classTime = moment(
       `${classInfo.weekday} ${classInfo.time}`,
       'dddd hh:mm A'
     )
-    if (currentTime.isBetween(classTime, moment(classTime).add(2, 'hour'))) {
-      console.log('Now Take Attendance: ', classInfo.courseCode)
-      takeAttendance(classInfo)
+
+    // example: read 02:00 PM
+    // If now is 02:00 pm, run script. If now is 03:00 pm, run script
+    if (currentTime.isBetween(classTime, moment(classTime).add(1, 'hour'))) {
+      // Additional check if it is already attended from attended.json. If no, then attend class
+      if (
+        !attendedClasses.find(
+          (attended) =>
+            attended.date === currentTime.format('YYYY/MM/DD') &&
+            attended.courseCode === classInfo.courseCode &&
+            attended.time === classInfo.time
+        )
+      ) {
+        console.log('Now Take Attendance: ', classInfo.courseCode)
+        takeAttendance(classInfo)
+
+        attendedClasses.push({
+          date: currentTime.format('YYYY/MM/DD'),
+          courseCode: classInfo.courseCode,
+          weekday: classInfo.weekday,
+          time: classInfo.time,
+        })
+        fs.writeFileSync(
+          './attended.json',
+          JSON.stringify(attendedClasses, null, 2)
+        )
+      }
     }
   }
 }
 
-cron.schedule('0 * * * *', () => {
-  checkAttendance()
-})
+checkAttendance()
