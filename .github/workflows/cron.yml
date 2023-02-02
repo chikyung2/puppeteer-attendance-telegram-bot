@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: '0 1-9 * * *' # every hour between 9 am and 5 pm in utc
+    - cron: '0 1-9 * * *' # every hour between 9 am and 5 pm in hong kong time in utc format
   workflow_dispatch:
 jobs:
   cron:
