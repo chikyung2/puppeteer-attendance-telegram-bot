@@ -1,11 +1,20 @@
 on:
   schedule:
-    - cron: '0 1-9 * * *' # every hour between 9 am and 5 pm in utc
+    - cron: '0 1-9 * * *' # every hour between 9 am and 5 pm in hong kong time in utc format
   workflow_dispatch:
 jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
+      - name: Set Environment Variable
+        env:
+          HKMU_LATITUDE: ${{ secrets.HKMU_LATITUDE}}
+          HKMU_LONGITUDE: ${{ secrets.HKMU_LONGITUDE}}
+          HKMU_PASSWORD: ${{ secrets.HKMU_USERNAME}}
+          OLE_ATTENDANCE_URL: ${{ secrets.OLE_ATTENDANCE_URL}}
+          OLE_BASE_URL: ${{ secrets.OLE_BASE_URL}}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID}}
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Setup Node.js
