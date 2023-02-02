@@ -19,7 +19,8 @@ jobs:
         env:
           HKMU_LATITUDE: ${{ secrets.HKMU_LATITUDE}}
           HKMU_LONGITUDE: ${{ secrets.HKMU_LONGITUDE}}
-          HKMU_PASSWORD: ${{ secrets.HKMU_USERNAME}}
+          HKMU_PASSWORD: ${{ secrets.HKMU_PASSWORD}}
+          HKMU_USERNAME: ${{ secrets.HKMU_USERNAME}}
           OLE_ATTENDANCE_URL: ${{ secrets.OLE_ATTENDANCE_URL}}
           OLE_BASE_URL: ${{ secrets.OLE_BASE_URL}}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN}}
