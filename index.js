@@ -4,24 +4,10 @@ import moment from 'moment'
 import TelegramBot from 'node-telegram-bot-api'
 import fs from 'fs'
 import puppeteer from 'puppeteer'
-// import pptr from 'puppeteer'
-// import pptrCore from 'puppeteer-core'
-// import chromium from 'chrome-aws-lambda'
-
-// let chrome = {}
-// let puppeteer
-
-// if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-//   // running on the Vercel platform.
-//   chrome = chromium
-//   puppeteer = pptrCore
-// } else {
-//   // running locally.
-//   puppeteer = pptr
-// }
 
 const takeAttendance = async (classInfo) => {
   // Launch puppeteer
+  console.log('Launching Puppeteer browser instance...')
   const browser = await puppeteer.launch({
     headless: true,
     defaultViewport: false,
@@ -42,6 +28,7 @@ const takeAttendance = async (classInfo) => {
   await page.goto(
     `${process.env.OLE_ATTENDANCE_URL}/${classInfo.courseCode}.nsf//class_activities_student?readform&`
   )
+  console.log('Start login to the OLE...')
   // url will change auto like: 'https://ole.hkmu.edu.hk/names.nsf?Login&RedirectTo=https://ole.hkmu.edu.hk/course2300/comps351f.nsf//class_activities_student?readform&'
   // will change to 'https://ole.hkmu.edu.hk/names.nsf?Login&RedirectTo=https://ole.hkmu.edu.hk/course2300/comps351f.nsf//class_activities_student?readform&26'
   await page.waitForNavigation()
@@ -61,6 +48,7 @@ const takeAttendance = async (classInfo) => {
   )
   await button_enter[0].click()
   await page.waitForNavigation()
+  console.log('Logged into the platform!')
 
   // Old Method: Go to specific course page and take attendance
   // await page.goto(
@@ -68,7 +56,7 @@ const takeAttendance = async (classInfo) => {
   // )
 
   // Get current time
-  const date = moment()
+  const date = moment().tz('Asia/Hong_Kong')
   const formattedDate = date.format('YYYY-MM-DD-HH-mm-ss')
 
   // Check if attendance success
@@ -76,75 +64,76 @@ const takeAttendance = async (classInfo) => {
   const isSubmitted = await page.$('#submitted_msg')
 
   // Take screenshot
-  const filename = `${classInfo.courseCode}-${formattedDate}.png`
-  await page.screenshot({
-    path: `./screenshots/${filename}`,
-  })
+  console.log('Taking screenshot...')
+  const screenshot = await page.screenshot()
+  const filename = `${classInfo.courseCode}-${formattedDate}`
 
-  await reportAttendance(isSubmitted, filename, date, classInfo)
-
+  console.log('Closing Puppeteer browser instance...')
   await browser.close()
+
+  console.log('Reporting Attendance...')
+  await reportAttendance(isSubmitted, screenshot, filename, date, classInfo)
 }
 
-const reportAttendance = async (isSubmitted, filename, date, classInfo) => {
+const reportAttendance = async (
+  isSubmitted,
+  screenshot,
+  filename,
+  date,
+  classInfo
+) => {
+  // Send message with Telegram Bot
   const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true })
   const dateOfClass = date.format('YYYY/MM/DD') + ' ' + classInfo.time
 
+  console.log('Sending attendance message to Telegram...')
   if (isSubmitted) {
-    bot.sendPhoto(process.env.TELEGRAM_CHAT_ID, `./screenshots/${filename}`, {
-      caption: `Take Attendance Successfully !!!\nCourse Code: ${classInfo.courseCode.toUpperCase()}\nDate of Class: ${dateOfClass} 14:00\nSubmission Time: ${date}`,
-    })
-  } else {
-    bot.sendMessage(
+    bot.sendDocument(
       process.env.TELEGRAM_CHAT_ID,
-      `Fail to Take Attendance !!!\nCourse Code: ${classInfo.courseCode.toUpperCase()}\nDate of Class: ${dateOfClass}\nSubmission Time: ${date}`
+      screenshot,
+      {
+        caption: `Take Attendance Successfully !!!\nCourse Code: ${classInfo.courseCode.toUpperCase()}\nDate of Class: ${dateOfClass} 14:00\nSubmission Time: ${date}`,
+      },
+      { filename: filename }
+    )
+  } else {
+    bot.sendDocument(
+      process.env.TELEGRAM_CHAT_ID,
+      screenshot,
+      {
+        caption: `Fail to Take Attendance !!!\nCourse Code: ${classInfo.courseCode.toUpperCase()}\nDate of Class: ${dateOfClass}\nSubmission Time: ${date}`,
+      },
+      { filename: filename }
     )
   }
+  console.log('Attendance message sent successfully to Telegram!')
 }
 
 const checkAttendance = () => {
-  let attendedClasses = []
-  attendedClasses = JSON.parse(fs.readFileSync('./attended.json', 'utf-8'))
+  console.log('Checking for attendance data in schedule file...')
   const classes = JSON.parse(fs.readFileSync('./schedule.json', 'utf-8'))
-  const currentTime = moment()
+  const currentTime = moment().tz('Asia/Hong_Kong')
 
   for (const classInfo of classes) {
     // Read time from class info
-    const classTime = moment(
+    const classTime = moment.tz(
       `${classInfo.weekday} ${classInfo.time}`,
-      'dddd hh:mm A'
+      'dddd hh:mm A',
+      'Asia/Hong_Kong'
     )
 
     // example: read 02:00 PM
     // If now is 02:00 pm, run script. If now is 03:00 pm, run script
     if (currentTime.isBetween(classTime, moment(classTime).add(1, 'hour'))) {
       // Additional check if it is already attended from attended.json. If no, then attend class
-      if (
-        !attendedClasses.find(
-          (attended) =>
-            attended.date === currentTime.format('YYYY/MM/DD') &&
-            attended.courseCode === classInfo.courseCode &&
-            attended.time === classInfo.time
-        )
-      ) {
-        console.log('Now Take Attendance: ', classInfo.courseCode)
-        takeAttendance(classInfo)
-
-        attendedClasses.push({
-          date: currentTime.format('YYYY/MM/DD'),
-          courseCode: classInfo.courseCode,
-          weekday: classInfo.weekday,
-          time: classInfo.time,
-        })
-        fs.writeFileSync(
-          './attended.json',
-          JSON.stringify(attendedClasses, null, 2)
-        )
-      }
+      console.log(
+        'Found a class that needs to have attendance taken now: ',
+        classInfo.courseCode
+      )
+      takeAttendance(classInfo)
     }
   }
-
-  console.log('Attendance check completed !!!');
+  console.log('All attendance processes completed successfully.')
 }
 
 checkAttendance()
