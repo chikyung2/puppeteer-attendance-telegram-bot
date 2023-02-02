@@ -110,6 +110,7 @@ const reportAttendance = async (
 }
 
 const checkAttendance = () => {
+  console.log('Check if environment variables working: ', process.env.HKMU_USERNAME);
   console.log('Checking for attendance data in schedule file...')
   const classes = JSON.parse(fs.readFileSync('./schedule.json', 'utf-8'))
   const currentTime = moment().tz('Asia/Hong_Kong')
