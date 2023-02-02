@@ -3,11 +3,13 @@ lockfileVersion: 5.4
 specifiers:
   dotenv: ^16.0.3
   moment: ^2.29.4
+  moment-timezone: ^0.5.40
   node-telegram-bot-api: ^0.61.0
   puppeteer: ^19.6.2
 
 dependencies:
   moment: 2.29.4
+  moment-timezone: 0.5.40
   node-telegram-bot-api: 0.61.0
 
 devDependencies:
@@ -811,6 +813,12 @@ packages:
   /mkdirp-classic/0.5.3:
     resolution: {integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==}
     dev: true
+
+  /moment-timezone/0.5.40:
+    resolution: {integrity: sha512-tWfmNkRYmBkPJz5mr9GVDn9vRlVZOTe6yqY92rFxiOdWXbjaR0+9LwQnZGGuNR63X456NqmEkbskte8tWL5ePg==}
+    dependencies:
+      moment: 2.29.4
+    dev: false
 
   /moment/2.29.4:
     resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}

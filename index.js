@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import moment from 'moment'
+import moment from 'moment-timezone'
 import TelegramBot from 'node-telegram-bot-api'
 import fs from 'fs'
 import puppeteer from 'puppeteer'
