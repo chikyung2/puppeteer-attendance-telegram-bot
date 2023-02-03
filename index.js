@@ -114,7 +114,7 @@ const reportAttendance = async (
   console.log('Attendance message sent successfully to Telegram!')
 }
 
-const checkAttendance = () => {
+const checkAttendance = async () => {
   console.log('Checking for attendance data in schedule file...')
   const classes = JSON.parse(fs.readFileSync('./schedule.json', 'utf-8'))
   const currentTime = moment().tz('Asia/Hong_Kong')
@@ -135,7 +135,7 @@ const checkAttendance = () => {
         'Found a class that needs to have attendance taken now: ',
         classInfo.courseCode
       )
-      takeAttendance(classInfo)
+      await takeAttendance(classInfo)
     }
   }
   console.log('All attendance processes completed successfully.')
