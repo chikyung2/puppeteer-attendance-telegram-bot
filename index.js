@@ -70,7 +70,7 @@ const takeAttendance = async (classInfo) => {
   // Take screenshot
   console.log('Taking screenshot...')
   await delay(3000)
-  const screenshot = await page.screenshot({ path: './test.png' })
+  const screenshot = await page.screenshot()
   const filename = `${classInfo.courseCode}-${formattedDate}`
 
   console.log('Closing Puppeteer browser instance...')
