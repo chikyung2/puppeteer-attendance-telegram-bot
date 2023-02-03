@@ -5,6 +5,10 @@ import TelegramBot from 'node-telegram-bot-api'
 import fs from 'fs'
 import puppeteer from 'puppeteer'
 
+const delay = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 const takeAttendance = async (classInfo) => {
   // Launch puppeteer
   console.log('Launching Puppeteer browser instance...')
@@ -65,7 +69,8 @@ const takeAttendance = async (classInfo) => {
 
   // Take screenshot
   console.log('Taking screenshot...')
-  const screenshot = await page.screenshot()
+  await delay(3000)
+  const screenshot = await page.screenshot({ path: './test.png' })
   const filename = `${classInfo.courseCode}-${formattedDate}`
 
   console.log('Closing Puppeteer browser instance...')
@@ -83,7 +88,7 @@ const reportAttendance = async (
   classInfo
 ) => {
   // Send message with Telegram Bot
-  const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true })
+  const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN)
   const dateOfClass = date.format('YYYY/MM/DD') + ' ' + classInfo.time
 
   console.log('Sending attendance message to Telegram...')
