@@ -59,17 +59,23 @@ const takeAttendance = async (classInfo) => {
   //   `${process.env.OLE_COURSE_URL}/${classInfo.courseCode}.nsf//class_activities_student?readform&`
   // )
 
+  // Check if attendance success
+  let isSubmitted = false
+  try {
+    await page.waitForSelector('#submitted_msg', { timeout: 3000 })
+    console.log('Found selector (#submitted_msg)')
+    isSubmitted = true
+  } catch (error) {
+    console.log('Cannot find selector (#submitted_msg)')
+  }
+
   // Get current time
   const date = moment().tz('Asia/Hong_Kong')
   const formattedDate = date.format('YYYY-MM-DD-HH-mm-ss')
 
-  // Check if attendance success
-  await page.waitForSelector('#submitted_msg', { timeout: 3000 })
-  const isSubmitted = await page.$('#submitted_msg')
-
   // Take screenshot
   console.log('Taking screenshot...')
-  await delay(3000)
+  // await delay(3000)
   const screenshot = await page.screenshot()
   const filename = `${classInfo.courseCode}-${formattedDate}`
 
