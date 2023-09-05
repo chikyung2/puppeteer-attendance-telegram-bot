@@ -1,41 +1,36 @@
 [
   {
-    "courseCode": "comps351f",
-    "weekday": "Monday",
-    "time": "02:00 PM"
-  },
-  {
-    "courseCode": "comps321f",
+    "courseCode": "comps362f",
     "weekday": "Tuesday",
     "time": "11:00 AM"
   },
   {
-    "courseCode": "comps313f",
+    "courseCode": "comps333f",
     "weekday": "Tuesday",
     "time": "02:00 PM"
   },
   {
-    "courseCode": "comps267f",
-    "weekday": "Wednesday",
-    "time": "11:00 AM"
-  },
-  {
-    "courseCode": "comps313f",
-    "weekday": "Wednesday",
-    "time": "02:00 PM"
-  },
-  {
-    "courseCode": "comps321f",
+    "courseCode": "comps362f",
     "weekday": "Wednesday",
     "time": "04:00 PM"
   },
   {
-    "courseCode": "comps351f",
+    "courseCode": "comps333f",
+    "weekday": "Thursday",
+    "time": "09:00 AM"
+  },
+  {
+    "courseCode": "comps381f",
     "weekday": "Thursday",
     "time": "11:00 AM"
   },
   {
-    "courseCode": "comps267f",
+    "courseCode": "comps381f",
+    "weekday": "Friday",
+    "time": "09:00 AM"
+  },
+  {
+    "courseCode": "comps456f",
     "weekday": "Friday",
     "time": "02:00 PM"
   }
