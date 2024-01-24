@@ -30,7 +30,7 @@ const takeAttendance = async (classInfo) => {
   })
   // await page.goto(process.env.OLE_LOGIN_URL)
   await page.goto(
-    `${process.env.OLE_ATTENDANCE_URL}/${classInfo.courseCode}.nsf//class_activities_student?readform&`
+    `${process.env.OLE_ATTENDANCE_URL}/${classInfo.courseCode}.nsf//class_activities_student?readform&`, {timeout: 0}
   )
   console.log('Start login to the OLE...')
   // url will change auto like: 'https://ole.hkmu.edu.hk/names.nsf?Login&RedirectTo=https://ole.hkmu.edu.hk/course2300/comps351f.nsf//class_activities_student?readform&'
