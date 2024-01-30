@@ -13,7 +13,7 @@ const takeAttendance = async (classInfo) => {
   // Launch puppeteer
   console.log('Launching Puppeteer browser instance...')
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: 'new',
     defaultViewport: false,
     // Sometimes not work, then set a slowMo
     // slowMo: 100,
